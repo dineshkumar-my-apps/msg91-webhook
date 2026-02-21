@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       messages: data.messages || null,
       contacts: data.contacts || null,
       requestedAt: data.requestedAt || null,
-      integrationNumber: data.integrationNumber || null,
+      integratedNumber: data.integratedNumber || null,
       contentType: data.contentType || null,
       messageType: data.messageType || null,
       uuid: data.uuid || null
@@ -114,7 +114,7 @@ export default async function handler(req, res) {
       minute: '2-digit',
       hour12: true
     }).format(now).toUpperCase().replace(/\u202f/g, ' ');
-    
+
       const messageData = {
       created_at: now,
       date1: formattedDate1,
