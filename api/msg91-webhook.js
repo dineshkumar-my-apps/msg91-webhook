@@ -51,11 +51,10 @@ const formattedTime = new Intl.DateTimeFormat('en-IN', {
     const messageData = {
   name: data.customerName || null,
   mobile: data.customerNumber || null,
-  message_id: data.messageId || data.uuid || null,
   message_body: data.text || data.content || null,
   created_at: now,
   date1: formattedDate1,
-    date2: formattedDate2,
+  date2: formattedDate2,
   time: formattedTime,
   raw_payload: payload
 };
