@@ -8,6 +8,19 @@ const webhookSecret = process.env.MSG91_WEBHOOK_SECRET;
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
 export default async function handler(req, res) {
+    // 0️⃣ Handle CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, msg91-webhook-secret'
+    );
+
+    if (req.method === 'OPTIONS') {
+        res.status(200).end()
+        return
+    }
+
     // 1️⃣ Allow only GET
     if (req.method !== 'GET') {
         res.setHeader('Allow', ['GET']);

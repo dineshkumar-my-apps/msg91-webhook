@@ -69,6 +69,22 @@ vercel
 }
 ```
 
+## Admin Dashboard
+The project includes a premium, glassmorphic admin dashboard built with Vanilla HTML/JS/CSS.
+
+### Features
+- **Visual Analytics**: Real-time stats for total replies, today's volume, and unique customers.
+- **Advanced Filtering**: Filter by date range, mobile number, or template name.
+- **Export Data**: Download your filtered reports as CSV.
+- **Secure Access**: Simple secret-key based authentication.
+
+### How to Access
+1. Run locally: `npm run serve`
+2. Open in your browser: `http://localhost:3000`
+3. Enter your `MSG91_WEBHOOK_SECRET` when prompted.
+
+---
+
 ## Dashboard Data API
 
 ### Get Messages
