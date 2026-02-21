@@ -28,19 +28,33 @@ export default async function handler(req, res) {
     const payload = req.body;
     const data = Array.isArray(payload) ? payload[0] : payload;
 
+    const now = new Date();
+
+// Format date YYYY-MM-DD
+const formattedDate = now.toISOString().split('T')[0];
+
+// Format time 12-hour format
+const formattedTime = now.toLocaleTimeString('en-US', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+
     const messageData = {
-      message_id: data.messageId || data.uuid || null,
-      mobile: data.mobile || data.destination || null,
-      status: data.status || null,
-      message_type: data.type || null,
-      message_body: data.text || data.content || null,
-      raw_payload: payload,
-    };
+  name: data.customerName || null,
+  mobile: data.customerNumber || null,
+  message_id: data.messageId || data.uuid || null,
+  message_body: data.text || data.content || null,
+  created_at: now,
+  date: formattedDate,
+  time: formattedTime,
+  raw_payload: payload
+};
 
     console.log('Processing webhook for message:', messageData.message_id);
 
     const { error: insertError } = await supabase
-      .from('messages')
+      .from('wa_reply')
       .insert([messageData]);
 
     if (insertError) {
