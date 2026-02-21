@@ -1,0 +1,16 @@
+{
+  "name": "msg91-webhook",
+  "version": "1.0.0",
+  "description": "MSG91 Webhook Backend for Vercel",
+  "main": "api/msg91-webhook.js",
+  "scripts": {
+    "serve": "vercel dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1"
+  },
+  "devDependencies": {
+    "vercel": "^50.22.1"
+  }
+}
