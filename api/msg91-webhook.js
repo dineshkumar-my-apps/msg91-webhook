@@ -69,7 +69,9 @@ export default async function handler(req, res) {
       integratedNumber: data.integratedNumber || null,
       contentType: data.contentType || null,
       messageType: data.messageType || null,
-      uuid: data.uuid || null
+      uuid: data.uuid || null,
+      status: "success",
+      error_msg: null,
     };
 
     console.log('Processing webhook for mobile:', messageData.mobile);
@@ -119,6 +121,7 @@ export default async function handler(req, res) {
       created_at: now,
       date1: formattedDate1,
       date2: formattedDate2,
+      status: "error",
       error_msg: error.message,
       raw_payload: payload
     };
