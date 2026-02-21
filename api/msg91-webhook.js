@@ -28,38 +28,43 @@ export default async function handler(req, res) {
     const payload = req.body;
     const data = Array.isArray(payload) ? payload[0] : payload;
 
-const now = new Date();
+    const now = new Date();
 
-const formattedDate1 = new Intl.DateTimeFormat('en-CA', {
-  timeZone: 'Asia/Kolkata'
-}).format(now);
+    const formattedDate1 = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(now);
 
-const formattedDate2 = new Intl.DateTimeFormat('en-GB', {
-  timeZone: 'Asia/Kolkata',
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric'
-}).format(now).replace(/\//g, '-');
+    const formattedDate2 = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(now).replace(/\//g, '-');
 
-const formattedTime = new Intl.DateTimeFormat('en-IN', {
-  timeZone: 'Asia/Kolkata',
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: true
-}).format(now);
+    const formattedTime = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }).format(now).toUpperCase().replace(/\u202f/g, ' ');
 
     const messageData = {
-  name: data.customerName || null,
-  mobile: data.customerNumber || null,
-  message_body: data.text || data.content || null,
-  created_at: now,
-  date1: formattedDate1,
-  date2: formattedDate2,
-  time: formattedTime,
-  raw_payload: payload
-};
+      name: data.name || null,
+      mobile: data.mobile || null,
+      message_body: data.message_body || null,
+      campaign_name: data.campaign_name || null,
+      template_name: data.template_name || null,
+      created_at: now,
+      date1: formattedDate1,
+      date2: formattedDate2,
+      time: formattedTime,
+      raw_payload: payload
+    };
 
-    console.log('Processing webhook for message:', messageData.message_id);
+    console.log('Processing webhook for mobile:', messageData.mobile);
 
     const { error: insertError } = await supabase
       .from('wa_reply')
