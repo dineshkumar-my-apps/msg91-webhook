@@ -61,7 +61,15 @@ export default async function handler(req, res) {
       date1: formattedDate1,
       date2: formattedDate2,
       time: formattedTime,
-      raw_payload: payload
+      raw_payload: payload,
+      ts: data.ts,
+      messages: data.messages,
+      contacts: data.contacts,
+      requestedAt: data.requestedAt,
+      integrationNumber: data.integrationNumber,
+      contentType: data.contentType,
+      messageType: data.messageType,
+      uuid: data.uuid
     };
 
     console.log('Processing webhook for mobile:', messageData.mobile);
