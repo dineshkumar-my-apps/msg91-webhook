@@ -52,11 +52,11 @@ export default async function handler(req, res) {
     }).format(now).toUpperCase().replace(/\u202f/g, ' ');
 
     const messageData = {
-      name: data.name || null,
-      mobile: data.mobile || null,
-      message_body: data.message_body || null,
-      campaign_name: data.campaign_name || null,
-      template_name: data.template_name || null,
+      name: data.customerName || null,
+      mobile: data.customerNumber || null,
+      message_body: data.text || null,
+      campaign_name: data.contentType || null,
+      template_name: data.templateName || null,
       created_at: now,
       date1: formattedDate1,
       date2: formattedDate2,
