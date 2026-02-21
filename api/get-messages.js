@@ -29,15 +29,19 @@ export default async function handler(req, res) {
             .select('*')
             .order('created_at', { ascending: false });
 
-        // 4️⃣ Apply Filters
+        // 4️⃣ Apply Filters (Timestamp based)
         if (start_date) {
-            query = query.gte('date1', start_date);
+            // If it's just a date (YYYY-MM-DD), append midnight
+            const start = start_date.length === 10 ? `${start_date} 00:00:00` : start_date;
+            query = query.gte('created_at', start);
         }
         if (end_date) {
-            query = query.lte('date1', end_date);
+            // If it's just a date (YYYY-MM-DD), append end of day
+            const end = end_date.length === 10 ? `${end_date} 23:59:59.999` : end_date;
+            query = query.lte('created_at', end);
         }
         if (mobile) {
-            query = query.ilike('mobile', `%${mobile}%`);
+            query = query.eq('mobile', mobile);
         }
         if (template_name) {
             query = query.eq('template_name', template_name);
