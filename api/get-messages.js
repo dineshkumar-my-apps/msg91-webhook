@@ -31,13 +31,12 @@ export default async function handler(req, res) {
 
         // 4️⃣ Apply Filters (Timestamp based)
         if (start_date) {
-            // If it's just a date (YYYY-MM-DD), append midnight
-            const start = start_date.length === 10 ? `${start_date} 00:00:00` : start_date;
+            const start = new Date(start_date + "T00:00:00Z").toISOString();
             query = query.gte('created_at', start);
         }
+
         if (end_date) {
-            // If it's just a date (YYYY-MM-DD), append end of day
-            const end = end_date.length === 10 ? `${end_date} 23:59:59.999` : end_date;
+            const end = new Date(end_date + "T23:59:59.999Z").toISOString();
             query = query.lte('created_at', end);
         }
         if (mobile) {
