@@ -62,14 +62,14 @@ export default async function handler(req, res) {
       date2: formattedDate2,
       time: formattedTime,
       raw_payload: payload,
-      ts: data.ts,
-      messages: data.messages,
-      contacts: data.contacts,
-      requestedAt: data.requestedAt,
-      integrationNumber: data.integrationNumber,
-      contentType: data.contentType,
-      messageType: data.messageType,
-      uuid: data.uuid
+      ts: data.ts || null,
+      messages: data.messages || null,
+      contacts: data.contacts || null,
+      requestedAt: data.requestedAt || null,
+      integrationNumber: data.integrationNumber || null,
+      contentType: data.contentType || null,
+      messageType: data.messageType || null,
+      uuid: data.uuid || null
     };
 
     console.log('Processing webhook for mobile:', messageData.mobile);
@@ -89,7 +89,48 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Webhook Handler Error:', error.message);
+        console.error('Webhook Handler Error:', error.message);
+
+    const payload = req.body;
+    const now = new Date();
+
+    const formattedDate1 = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(now);
+
+    const formattedDate2 = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(now).replace(/\//g, '-');
+
+    const formattedTime = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }).format(now).toUpperCase().replace(/\u202f/g, ' ');
+    
+      const messageData = {
+      created_at: now,
+      date1: formattedDate1,
+      date2: formattedDate2,
+      error_msg: error.message,
+      raw_payload: payload
+    };
+    
+    const { error: insertError } = await supabase
+      .from('wa_reply')
+      .insert([messageData]);
+
+    if (insertError) {
+      console.error('Supabase Error:', insertError);
+      throw new Error(insertError.message);
+    }
     return res.status(500).json({
       success: false,
       message: error.message,
