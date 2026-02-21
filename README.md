@@ -69,8 +69,25 @@ vercel
 }
 ```
 
+## Dashboard Data API
+
+### Get Messages
+**Endpoint**: `GET /api/get-messages`
+
+**Headers**:
+- `msg91-webhook-secret`: Your secret key
+
+**Query Parameters**:
+- `start_date`: YYYY-MM-DD (matches `date1`)
+- `end_date`: YYYY-MM-DD (matches `date1`)
+- `mobile`: Filter by mobile number
+- `template_name`: Filter by template
+
+**Example**:
+`GET /api/get-messages?start_date=2024-02-01&end_date=2024-02-21`
+
 ## Features
-- **Security**: Validates MSG91 signature using HMAC SHA256.
+- **Security**: Validates secret header for both receiving and fetching data.
 - **Resilience**: Proper error handling with try/catch and HTTP status codes.
-- **Scalability**: Uses Vercel's serverless infrastructure.
-- **Data Persistence**: Stores full payload and extracted fields in Supabase.
+- **Kolkata Timezone**: Automatically formats all incoming messages to IST.
+- **Dashboard Ready**: Clean JSON output for your admin dashboard.
