@@ -28,17 +28,25 @@ export default async function handler(req, res) {
     const payload = req.body;
     const data = Array.isArray(payload) ? payload[0] : payload;
 
-    const now = new Date();
+const now = new Date();
 
-// Format date YYYY-MM-DD
-const formattedDate = now.toISOString().split('T')[0];
+const formattedDate1 = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Kolkata'
+}).format(now);
 
-// Format time 12-hour format
-const formattedTime = now.toLocaleTimeString('en-US', {
+const formattedDate2 = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Kolkata',
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric'
+}).format(now).replace(/\//g, '-');
+
+const formattedTime = new Intl.DateTimeFormat('en-IN', {
+  timeZone: 'Asia/Kolkata',
   hour: '2-digit',
   minute: '2-digit',
   hour12: true
-});
+}).format(now);
 
     const messageData = {
   name: data.customerName || null,
@@ -46,7 +54,8 @@ const formattedTime = now.toLocaleTimeString('en-US', {
   message_id: data.messageId || data.uuid || null,
   message_body: data.text || data.content || null,
   created_at: now,
-  date: formattedDate,
+  date1: formattedDate1,
+    date2: formattedDate2,
   time: formattedTime,
   raw_payload: payload
 };
