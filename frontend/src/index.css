@@ -494,7 +494,10 @@ th {
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
-    background: var(--card-bg);
+    background: #f8fafc;
+    /* Added light background color */
+    border-bottom: 2px solid var(--border-color);
+    /* Added subtle border for contrast */
 }
 
 td {

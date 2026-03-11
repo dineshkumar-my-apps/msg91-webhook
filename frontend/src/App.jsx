@@ -496,8 +496,10 @@ export default function App() {
                       <table>
                         <thead>
                           <tr>
+                            <th>S.No</th>
                             <th>Customer</th>
                             <th>Mobile</th>
+                            <th>Type</th>
                             <th>Message Body</th>
                             <th>Template</th>
                             <th>Date</th>
@@ -508,8 +510,14 @@ export default function App() {
                         <tbody>
                           {paginatedMessages.map((msg, idx) => (
                             <tr key={idx}>
+                              <td>{(currentPage - 1) * ROWS_PER_PAGE + idx + 1}</td>
                               <td><div style={{ fontWeight: 600 }}>{msg.name || 'Unknown'}</div></td>
                               <td><code>{msg.mobile}</code></td>
+                              <td>
+                                <span className="badge" style={{ background: '#e2e8f0', color: '#475569' }}>
+                                  {msg.raw_payload?.messageType || msg.raw_payload?.contentType || 'text'}
+                                </span>
+                              </td>
                               <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {getMessageContent(msg) || <span style={{ color: 'grey', fontStyle: 'italic' }}>No content</span>}
                               </td>
