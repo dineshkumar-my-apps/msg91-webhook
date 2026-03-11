@@ -635,6 +635,10 @@ tr:hover td {
     border-radius: 20px;
     width: 100%;
     max-width: 420px;
+    max-height: 90vh;
+    /* Allow max height */
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
     overflow: hidden;
     animation: slideUp 0.3s ease;
@@ -665,6 +669,11 @@ tr:hover td {
     font-weight: 600;
     display: flex;
     align-items: center;
+}
+
+.modal-body {
+    overflow-y: auto;
+    flex-grow: 1;
 }
 
 .close-modal {

@@ -67,6 +67,12 @@ function getMessageContent(msg) {
   if (type === 'image') {
     return '[Image] ' + (msg.raw_payload?.caption || msg.raw_payload?.text || '');
   }
+  if (type === 'audio') {
+    return '[Audio] ' + (msg.raw_payload?.caption || msg.raw_payload?.text || '');
+  }
+  if (type === 'video') {
+    return '[Video] ' + (msg.raw_payload?.caption || msg.raw_payload?.text || '');
+  }
   return msg.message_body || msg.raw_payload?.text || '';
 }
 
@@ -659,6 +665,24 @@ export default function App() {
                         alt="WhatsApp Media"
                         style={{ maxWidth: '100%', borderRadius: '8px', marginBottom: '8px' }}
                       />
+                      {selectedMessage.raw_payload?.text && <p>{selectedMessage.raw_payload.text}</p>}
+                      {selectedMessage.raw_payload?.caption && <p>{selectedMessage.raw_payload.caption}</p>}
+                    </div>
+                  ) : selectedMessage.raw_payload?.messageType === 'audio' || selectedMessage.raw_payload?.contentType === 'audio' ? (
+                    <div>
+                      <audio controls style={{ width: '100%', marginBottom: '8px' }}>
+                        <source src={selectedMessage.raw_payload?.url} />
+                        Your browser does not support the audio element.
+                      </audio>
+                      {selectedMessage.raw_payload?.text && <p>{selectedMessage.raw_payload.text}</p>}
+                      {selectedMessage.raw_payload?.caption && <p>{selectedMessage.raw_payload.caption}</p>}
+                    </div>
+                  ) : selectedMessage.raw_payload?.messageType === 'video' || selectedMessage.raw_payload?.contentType === 'video' ? (
+                    <div>
+                      <video controls style={{ maxWidth: '100%', borderRadius: '8px', marginBottom: '8px' }}>
+                        <source src={selectedMessage.raw_payload?.url} />
+                        Your browser does not support the video element.
+                      </video>
                       {selectedMessage.raw_payload?.text && <p>{selectedMessage.raw_payload.text}</p>}
                       {selectedMessage.raw_payload?.caption && <p>{selectedMessage.raw_payload.caption}</p>}
                     </div>
