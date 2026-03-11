@@ -4,6 +4,7 @@
   "description": "MSG91 Webhook Backend for Vercel",
   "main": "api/msg91-webhook.js",
   "scripts": {
+    "build": "cd frontend && npm install && npm run build",
     "serve": "vercel dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
