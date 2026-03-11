@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import {
   ShieldCheck, LayoutDashboard, MessageSquare, Users, LogOut, Key,
   MessageCircle, Calendar, Users2, Search, RefreshCw,
-  Download, Inbox, ChevronLeft, ChevronRight
+  Download, Inbox, ChevronLeft, ChevronRight, Eye, X
 } from 'lucide-react';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -53,6 +53,23 @@ const DATE_PRESETS = [
   { label: 'Custom', fn: null },
 ];
 
+function getMessageContent(msg) {
+  const type = msg.raw_payload?.messageType || msg.raw_payload?.contentType;
+  if (type === 'button') {
+    try {
+      const btnRaw = msg.raw_payload.button;
+      const btnData = typeof btnRaw === 'string' ? JSON.parse(btnRaw) : btnRaw;
+      return btnData?.text || btnData?.payload || msg.message_body || 'Button Response';
+    } catch (e) {
+      return msg.raw_payload.button || msg.message_body || 'Button Response';
+    }
+  }
+  if (type === 'image') {
+    return '[Image] ' + (msg.raw_payload?.caption || msg.raw_payload?.text || '');
+  }
+  return msg.message_body || msg.raw_payload?.text || '';
+}
+
 // ── Main App ──────────────────────────────────────────────────
 export default function App() {
   const [secret, setSecret] = useState(localStorage.getItem('msg91_secret') || '');
@@ -76,6 +93,9 @@ export default function App() {
 
   const [datePreset, setDatePreset] = useState('Today');
   const [showCustomDate, setShowCustomDate] = useState(false);
+
+  // Message Details Modal
+  const [selectedMessage, setSelectedMessage] = useState(null);
 
   // Pagination
   const ROWS_PER_PAGE = 10;
@@ -234,7 +254,7 @@ export default function App() {
     const rows = messages.map(m => [
       `"${m.name || 'Unknown'}"`,
       `"${m.mobile}"`,
-      `"${(m.message_body || '').replace(/"/g, '""')}"`,
+      `"${(getMessageContent(m)).replace(/"/g, '""')}"`,
       `"${m.template_name || 'N/A'}"`,
       m.date2,
       m.time
@@ -476,6 +496,7 @@ export default function App() {
                             <th>Template</th>
                             <th>Date</th>
                             <th>Time</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -484,11 +505,20 @@ export default function App() {
                               <td><div style={{ fontWeight: 600 }}>{msg.name || 'Unknown'}</div></td>
                               <td><code>{msg.mobile}</code></td>
                               <td style={{ maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {msg.message_body || <span style={{ color: 'grey', fontStyle: 'italic' }}>No content</span>}
+                                {getMessageContent(msg) || <span style={{ color: 'grey', fontStyle: 'italic' }}>No content</span>}
                               </td>
                               <td><span className="badge purple">{msg.template_name || 'N/A'}</span></td>
                               <td>{msg.date2 || 'N/A'}</td>
                               <td>{msg.time || 'N/A'}</td>
+                              <td>
+                                <button
+                                  className="secondary-btn"
+                                  style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px' }}
+                                  onClick={() => setSelectedMessage(msg)}
+                                >
+                                  <Eye size={14} /> View
+                                </button>
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -601,6 +631,62 @@ export default function App() {
                 Save & Connect
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Message Details Modal */}
+      {selectedMessage && (
+        <div className="modal" style={{ display: 'flex' }}>
+          <div className="modal-content" style={{ maxWidth: '500px' }}>
+            <div className="modal-header">
+              <h3><Eye size={18} style={{ marginRight: 8, verticalAlign: 'middle' }} /> Message Details</h3>
+              <button className="close-modal" onClick={() => setSelectedMessage(null)}><X size={20} /></button>
+            </div>
+            <div className="modal-body" style={{ padding: '24px', textAlign: 'left' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: '600' }}>Customer: </span>
+                <span style={{ fontSize: '14px', fontWeight: '500' }}>{selectedMessage.name || 'Unknown'} ({selectedMessage.mobile})</span>
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: '600', display: 'block', marginBottom: '8px' }}>Content: </span>
+                <div style={{ background: 'var(--input-bg)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '14px', lineHeight: '1.5' }}>
+                  {selectedMessage.raw_payload?.messageType === 'image' || selectedMessage.raw_payload?.contentType === 'image' ? (
+                    <div>
+                      <img
+                        src={selectedMessage.raw_payload?.url}
+                        alt="WhatsApp Media"
+                        style={{ maxWidth: '100%', borderRadius: '8px', marginBottom: '8px' }}
+                      />
+                      {selectedMessage.raw_payload?.text && <p>{selectedMessage.raw_payload.text}</p>}
+                      {selectedMessage.raw_payload?.caption && <p>{selectedMessage.raw_payload.caption}</p>}
+                    </div>
+                  ) : selectedMessage.raw_payload?.messageType === 'button' || selectedMessage.raw_payload?.contentType === 'button' ? (
+                    <div>
+                      <p style={{ marginBottom: '8px', color: 'var(--text-secondary)' }}>Button Selection:</p>
+                      <div style={{ display: 'inline-block', background: 'var(--accent-purple)', color: 'white', padding: '8px 16px', borderRadius: '8px', fontWeight: '500' }}>
+                        {getMessageContent(selectedMessage)}
+                      </div>
+                    </div>
+                  ) : (
+                    <p style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                      {getMessageContent(selectedMessage) || <span style={{ color: 'grey', fontStyle: 'italic' }}>No content</span>}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: '600', display: 'block' }}>Date & Time: </span>
+                  <span style={{ fontSize: '14px' }}>{selectedMessage.date2} at {selectedMessage.time}</span>
+                </div>
+                <div>
+                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: '600', display: 'block' }}>Template: </span>
+                  <span style={{ fontSize: '14px' }} className="badge purple">{selectedMessage.template_name || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
